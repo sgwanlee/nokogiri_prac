@@ -4,15 +4,14 @@ require 'nokogiri'
 require 'open-uri'
 
 url = Hash.new('http://www.possess.kr')
-# Dress product image (first page)
 # Example img url = http://www.possess.kr/shopimages/flfl0114/0020000002403.jpg
 url['Dress'] = '/shop/shopbrand.html?xcode=002&type=O'
-# doc = Nokogiri::HTML(open(url['Dress']))
 
 agent = Mechanize.new
 page = agent.get(url[:default])
 page = agent.page.link_with(href: url['Dress']).click
 
+# pagination[-2] == pagination[-1]. Remove redundancy.
 pagination = agent.page.links_with(:href => /page=/)[0..-2]
 
 products = []
@@ -28,7 +27,7 @@ pagination.each do |page|
 
 		products << {img: img_url, price: price}
 		
-		Save image
+		#Save image
 		open(img_src.gsub(/\//, '_'), 'wb') do |file|
 			file << open(img_url).read
 		end
